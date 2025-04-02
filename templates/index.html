@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Tumores 🧠</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Detección de Tumores 🧠</h1>
+        </header>
+
+        <!-- Sección de imágenes -->
+        <section class="images-container">
+            <div class="image-box">
+                <h2>MRI del Cerebro</h2>
+                <img id="image" src="" alt="Imagen">
+            </div>
+            <div class="image-box">
+                <h2>Máscara</h2>
+                <img id="mask" src="" alt="Máscara">
+            </div>
+            <div class="image-box">
+                <h2>MRI con Máscara</h2>
+                <img id="combined" src="" alt="Combinada">
+            </div>
+        </section>
+
+        <!-- Sección de resultado -->
+        <section id="result-container">
+            <h2>Resultado</h2>
+            <img id="result-image" src="" alt="Imagen Resultado">
+            <p id="result-tumor-status" class="tumor-status"></p>
+            <p id="precision-tumor" class="precision-tumor"></p>
+        </section>
+
+        <!-- Botones abajo -->
+        <section class="buttons-container">
+            <button id="result-btn" onclick="showResult()">Analizar</button>
+            <button id="modify-btn" onclick="loadImages()">Modificar Imagen</button>
+        </section>
+    </div>
+
+    <script>
+        function loadImages() {
+            fetch('/get_image')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('image').src = 'data:image/png;base64,' + data.image_base64;
+                    document.getElementById('mask').src = data.mask_base64 ? 'data:image/png;base64,' + data.mask_base64 : '';
+                    document.getElementById('combined').src = 'data:image/png;base64,' + data.combined_base64;
+                    document.getElementById('result-tumor-status').innerText = "Estado: " + data.tumor_status;
+                    document.getElementById('precision-tumor').innerText = "Precisión: " + data.precision;
+                });
+        }
+
+        function showResult() {
+            document.getElementById('result-image').src = document.getElementById('combined').src;
+            document.getElementById('result-container').style.display = 'block';
+        }
+
+        window.onload = loadImages;
+    </script>
+</body>
+</html>
